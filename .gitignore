@@ -33,3 +33,6 @@ Thumbs.db
 
 # TypeScript
 *.tsbuildinfo
+
+# Planning documents (working files — never committed)
+planning/
