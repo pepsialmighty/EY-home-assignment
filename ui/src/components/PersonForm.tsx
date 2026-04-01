@@ -78,7 +78,7 @@ export function PersonForm({ onSubmit, defaultValues, submitLabel, apiError, isS
       </div>
 
       {apiError && (
-        <div data-testid="field-error-dateOfBirth" style={{ color: 'red' }}>{apiError}</div>
+        <div data-testid="api-error" style={{ color: 'red' }}>{apiError}</div>
       )}
 
       <button type="submit" data-testid="btn-submit" disabled={isSubmitting}>
