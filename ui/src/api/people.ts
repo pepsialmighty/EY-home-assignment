@@ -1,4 +1,4 @@
-import { Person, PersonDto } from '../types/person';
+import type { Person, PersonDto } from '../types/person';
 
 async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {

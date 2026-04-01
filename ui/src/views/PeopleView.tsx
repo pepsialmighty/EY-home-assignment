@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Person } from '../types/person';
+import type { Person } from '../types/person';
 import { PersonForm } from '../components/PersonForm';
+import { ParentManager } from '../components/ParentManager';
 import { usePeople, useCreatePerson, useUpdatePerson, useDeletePerson } from '../api/usePeople';
 
 export function PeopleView() {
@@ -69,6 +70,7 @@ export function PeopleView() {
                 >
                   Delete
                 </button>
+                <ParentManager person={person} allPeople={people ?? []} />
               </div>
             )}
           </li>

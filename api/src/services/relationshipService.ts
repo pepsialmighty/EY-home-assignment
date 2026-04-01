@@ -1,13 +1,13 @@
 import * as personDb from '../db/personDb';
 import * as relationshipDb from '../db/relationshipDb';
+import { ParentEntry } from '../db/relationshipDb';
 import { AppError } from '../middleware/errorHandler';
 import { CreateRelationshipDto, Relationship } from '../models/relationship';
-import { Person } from '../models/person';
 
 const MIN_PARENT_AGE_DIFF_YEARS = 15;
 const MAX_PARENTS = 2;
 
-export function getParentsOf(childId: number): Person[] {
+export function getParentsOf(childId: number): ParentEntry[] {
   return relationshipDb.getParentsOf(childId);
 }
 
@@ -26,18 +26,20 @@ export function createRelationship(dto: CreateRelationshipDto): Relationship {
     throw new AppError(400, 'A person can have at most 2 parents');
   }
 
+  // Cycle check before age gap: structural integrity takes precedence.
+  // A cycle would always fail the age gap check too (the "parent" would be younger),
+  // but reporting "cycle" is more informative than "age gap".
+  const ancestorsOfParent = relationshipDb.getAllAncestorIds(dto.parentId);
+  if (ancestorsOfParent.has(dto.childId)) {
+    throw new AppError(400, 'This relationship would create a cycle');
+  }
+
   // Age gap check: child's DOB must be at least 15 years after parent's DOB (to the day)
   const parentDob = new Date(parent.dateOfBirth);
   const minChildDob = new Date(parentDob);
   minChildDob.setFullYear(minChildDob.getFullYear() + MIN_PARENT_AGE_DIFF_YEARS);
   if (new Date(child.dateOfBirth) < minChildDob) {
     throw new AppError(400, 'A parent must be at least 15 years older than their child');
-  }
-
-  // Cycle check: if the child is already an ancestor of the parent, adding this link creates a cycle
-  const ancestorsOfParent = relationshipDb.getAllAncestorIds(dto.parentId);
-  if (ancestorsOfParent.has(dto.childId)) {
-    throw new AppError(400, 'This relationship would create a cycle');
   }
 
   try {

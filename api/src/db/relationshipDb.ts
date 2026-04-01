@@ -2,14 +2,21 @@ import db from './database';
 import { Person } from '../models/person';
 import { Relationship, CreateRelationshipDto } from '../models/relationship';
 
-export function getParentsOf(childId: number): Person[] {
+export interface ParentEntry {
+  relationshipId: number;
+  person: Person;
+}
+
+export function getParentsOf(childId: number): ParentEntry[] {
   const stmt = db.prepare(`
-    SELECT p.id, p.name, p.date_of_birth AS dateOfBirth, p.place_of_birth AS placeOfBirth
+    SELECT r.id AS relationshipId,
+           p.id, p.name, p.date_of_birth AS dateOfBirth, p.place_of_birth AS placeOfBirth
     FROM people p
     JOIN relationships r ON r.parent_id = p.id
     WHERE r.child_id = ?
   `);
-  return stmt.all(childId) as unknown as Person[];
+  const rows = stmt.all(childId) as unknown as Array<{ relationshipId: number; id: number; name: string; dateOfBirth: string; placeOfBirth: string | null }>;
+  return rows.map(({ relationshipId, ...person }) => ({ relationshipId, person }));
 }
 
 export function getChildrenOf(parentId: number): Person[] {

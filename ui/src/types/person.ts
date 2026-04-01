@@ -10,3 +10,14 @@ export interface PersonDto {
   dateOfBirth: string;
   placeOfBirth?: string;
 }
+
+export interface Relationship {
+  id: number;
+  parentId: number;
+  childId: number;
+}
+
+export interface ParentEntry {
+  relationshipId: number;
+  person: Person;
+}

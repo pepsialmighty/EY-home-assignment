@@ -1,6 +1,17 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import type { Person } from '../src/models/person';
 
+// Prevent node:sqlite from loading — app.ts now also mounts relationshipRoutes
+vi.mock('../src/db/relationshipDb', () => ({
+  getParentsOf: () => [],
+  getChildrenOf: () => [],
+  getParentCount: () => 0,
+  getRelationshipById: () => undefined,
+  createRelationship: () => { throw new Error('not used in people tests'); },
+  deleteRelationship: () => {},
+  getAllAncestorIds: () => new Set(),
+}));
+
 // Mock personDb with an in-memory store — avoids importing node:sqlite in tests
 const store: { people: Person[]; nextId: number } = { people: [], nextId: 1 };
 

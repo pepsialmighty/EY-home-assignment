@@ -1,5 +1,5 @@
 import { useState, FormEvent } from 'react';
-import { PersonDto } from '../types/person';
+import type { PersonDto } from '../types/person';
 
 interface PersonFormProps {
   onSubmit: (dto: PersonDto) => void;
