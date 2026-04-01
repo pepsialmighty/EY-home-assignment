@@ -1,6 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { createPersonSchema, updatePersonSchema } from '../validation/personSchema';
 import * as personService from '../services/personService';
+import * as relationshipService from '../services/relationshipService';
 
 export const personRouter = Router();
 
@@ -38,6 +39,12 @@ personRouter.put('/:id', (req: Request, res: Response, next: NextFunction) => {
   } catch (err) {
     next(err);
   }
+});
+
+personRouter.get('/:id/parents', (req: Request, res: Response) => {
+  const id = parseInt(req.params.id, 10);
+  const parents = relationshipService.getParentsOf(id);
+  res.json({ data: parents });
 });
 
 personRouter.delete('/:id', (req: Request, res: Response, next: NextFunction) => {

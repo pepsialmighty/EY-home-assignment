@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { errorHandler } from './middleware/errorHandler';
 import { personRouter } from './routes/personRoutes';
+import { relationshipRouter } from './routes/relationshipRoutes';
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.get('/health', (_req, res) => {
 });
 
 app.use('/api/people', personRouter);
+app.use('/api/relationships', relationshipRouter);
 
 app.use(errorHandler);
 
