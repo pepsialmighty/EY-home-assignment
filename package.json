@@ -1,0 +1,9 @@
+{
+  "name": "family-tree",
+  "private": true,
+  "workspaces": ["api", "ui"],
+  "scripts": {
+    "dev:api": "npm run dev -w api",
+    "dev:ui": "npm run dev -w ui"
+  }
+}
