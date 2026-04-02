@@ -37,8 +37,7 @@ jobs:
 
       # E2E
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
-        working-directory: ui
+        run: node_modules/.bin/playwright install --with-deps chromium
 
       - name: Start api server
         run: npm run dev --workspace=api &
@@ -50,5 +49,4 @@ jobs:
         run: npx wait-on http://localhost:5000/health http://localhost:3000 --timeout 30000
 
       - name: Run E2E tests
-        run: npm run test:e2e
-        working-directory: ui
+        run: node_modules/.bin/playwright test --config ui/playwright.config.ts
