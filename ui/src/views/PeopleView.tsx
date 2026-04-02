@@ -1,12 +1,18 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import type { Person, PersonDto } from '../types/person';
-import { usePeople, useUpdatePerson, useDeletePerson } from '../api/usePeople';
-import { useRelationships, useDeleteRelationship } from '../api/useRelationships';
-import { useToast } from '../context/ToastContext';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import type { Person, PersonDto } from "../types/person";
+import { usePeople, useUpdatePerson, useDeletePerson } from "../api/usePeople";
+import {
+  useRelationships,
+  useDeleteRelationship,
+} from "../api/useRelationships";
+import { useToast } from "../context/ToastContext";
 
 function computeAge(dateOfBirth: string): number {
-  return Math.floor((Date.now() - new Date(dateOfBirth).getTime()) / (365.25 * 24 * 3600 * 1000));
+  return Math.floor(
+    (Date.now() - new Date(dateOfBirth).getTime()) /
+      (365.25 * 24 * 3600 * 1000),
+  );
 }
 
 export function PeopleView() {
@@ -18,10 +24,13 @@ export function PeopleView() {
   const { showToast } = useToast();
 
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [editValues, setEditValues] = useState<PersonDto>({ name: '', dateOfBirth: '' });
+  const [editValues, setEditValues] = useState<PersonDto>({
+    name: "",
+    dateOfBirth: "",
+  });
   const [editErrors, setEditErrors] = useState<Record<string, string>>({});
   const [editSubmitted, setEditSubmitted] = useState(false);
-  const [editApiError, setEditApiError] = useState('');
+  const [editApiError, setEditApiError] = useState("");
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [removingRelId, setRemovingRelId] = useState<number | null>(null);
 
@@ -32,52 +41,76 @@ export function PeopleView() {
       .filter((p): p is Person => p !== undefined);
   }
 
-  function childrenOf(personId: number): Array<{ relationshipId: number; person: Person }> {
+  function childrenOf(
+    personId: number,
+  ): Array<{ relationshipId: number; person: Person }> {
     return relationships
       .filter((r) => r.parentId === personId)
-      .map((r) => ({ relationshipId: r.id, person: people.find((p) => p.id === r.childId) }))
-      .filter((e): e is { relationshipId: number; person: Person } => e.person !== undefined);
+      .map((r) => ({
+        relationshipId: r.id,
+        person: people.find((p) => p.id === r.childId),
+      }))
+      .filter(
+        (e): e is { relationshipId: number; person: Person } =>
+          e.person !== undefined,
+      );
   }
 
   function startEdit(person: Person) {
     setEditingId(person.id);
-    setEditValues({ name: person.name, dateOfBirth: person.dateOfBirth, placeOfBirth: person.placeOfBirth ?? undefined });
+    setEditValues({
+      name: person.name,
+      dateOfBirth: person.dateOfBirth,
+      placeOfBirth: person.placeOfBirth ?? undefined,
+    });
     setEditErrors({});
     setEditSubmitted(false);
-    setEditApiError('');
+    setEditApiError("");
   }
 
   function cancelEdit() {
     setEditingId(null);
     setEditErrors({});
-    setEditApiError('');
+    setEditApiError("");
   }
 
   function handleEditSave(id: number) {
     setEditSubmitted(true);
     const errs: Record<string, string> = {};
-    if (!editValues.name.trim()) errs.name = 'Name is required';
-    if (!editValues.dateOfBirth) errs.dateOfBirth = 'Date of birth is required';
+    if (!editValues.name.trim()) errs.name = "Name is required";
+    if (!editValues.dateOfBirth) errs.dateOfBirth = "Date of birth is required";
     setEditErrors(errs);
     if (Object.keys(errs).length > 0) return;
     updatePerson.mutate(
       { id, dto: { ...editValues, name: editValues.name.trim() } },
       {
-        onSuccess: () => { setEditingId(null); showToast('Person updated successfully'); },
-        onError: (err) => setEditApiError(err instanceof Error ? err.message : 'Failed to update'),
-      }
+        onSuccess: () => {
+          setEditingId(null);
+          showToast("Person updated successfully");
+        },
+        onError: (err) =>
+          setEditApiError(
+            err instanceof Error ? err.message : "Failed to update",
+          ),
+      },
     );
   }
 
   function confirmDelete(id: number) {
     deletePerson.mutate(id, {
-      onSuccess: () => { setDeletingId(null); showToast('Person deleted'); },
+      onSuccess: () => {
+        setDeletingId(null);
+        showToast("Person deleted");
+      },
     });
   }
 
   function confirmRemoveRel(relId: number) {
     deleteRelationship.mutate(relId, {
-      onSuccess: () => { setRemovingRelId(null); showToast('Relationship removed'); },
+      onSuccess: () => {
+        setRemovingRelId(null);
+        showToast("Relationship removed");
+      },
     });
   }
 
@@ -102,17 +135,22 @@ export function PeopleView() {
     <div>
       <div className="flex gap-4 mb-6">
         <div className="flex-1 rounded-xl border border-gray-200 p-4 text-center">
-          <div className="text-3xl font-bold text-gray-900">{people.length}</div>
+          <div className="text-3xl font-bold text-gray-900">
+            {people.length}
+          </div>
           <div className="text-sm text-gray-500">People</div>
         </div>
         <div className="flex-1 rounded-xl border border-gray-200 p-4 text-center">
-          <div className="text-3xl font-bold text-gray-900">{relationships.length}</div>
+          <div className="text-3xl font-bold text-gray-900">
+            {relationships.length}
+          </div>
           <div className="text-sm text-gray-500">Relationships</div>
         </div>
       </div>
 
       <h2 className="text-lg font-medium text-gray-900 mb-4">
-        Family Tree ({people.length} people, {relationships.length} relationships)
+        Family Tree ({people.length} people, {relationships.length}{" "}
+        relationships)
       </h2>
 
       <ul data-testid="people-list" className="space-y-3">
@@ -127,11 +165,12 @@ export function PeopleView() {
             <li
               key={person.id}
               data-testid={`person-row-${person.id}`}
-              className="rounded-xl border border-gray-200 bg-white p-4"
+              className="rounded-xl border border-gray-200 bg-white p-4 hover:shadow transition-shadow"
             >
               {isDeleting ? (
                 <div className="text-sm text-gray-700">
-                  Are you sure you want to delete <strong>{person.name}</strong>?
+                  Are you sure you want to delete <strong>{person.name}</strong>
+                  ?
                   <button
                     data-testid={`btn-delete-confirm-${person.id}`}
                     onClick={() => confirmDelete(person.id)}
@@ -149,42 +188,66 @@ export function PeopleView() {
               ) : isEditing ? (
                 <div>
                   <div className="mb-3">
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Name *</label>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">
+                      Name *
+                    </label>
                     <input
                       data-testid="input-name"
                       type="text"
                       value={editValues.name}
-                      onChange={(e) => setEditValues((v) => ({ ...v, name: e.target.value }))}
+                      onChange={(e) =>
+                        setEditValues((v) => ({ ...v, name: e.target.value }))
+                      }
                       className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
                     />
                     {editSubmitted && editErrors.name && (
-                      <span data-testid="field-error-name" className="text-red-500 text-xs mt-1 block">
+                      <span
+                        data-testid="field-error-name"
+                        className="text-red-500 text-xs mt-1 block"
+                      >
                         {editErrors.name}
                       </span>
                     )}
                   </div>
                   <div className="mb-3">
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Date of Birth *</label>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">
+                      Date of Birth *
+                    </label>
                     <input
                       data-testid="input-dob"
                       type="date"
                       value={editValues.dateOfBirth}
-                      onChange={(e) => setEditValues((v) => ({ ...v, dateOfBirth: e.target.value }))}
+                      onChange={(e) =>
+                        setEditValues((v) => ({
+                          ...v,
+                          dateOfBirth: e.target.value,
+                        }))
+                      }
                       className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
                     />
                     {editSubmitted && editErrors.dateOfBirth && (
-                      <span data-testid="field-error-dateOfBirth" className="text-red-500 text-xs mt-1 block">
+                      <span
+                        data-testid="field-error-dateOfBirth"
+                        className="text-red-500 text-xs mt-1 block"
+                      >
                         {editErrors.dateOfBirth}
                       </span>
                     )}
                   </div>
                   <div className="mb-3">
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Place of Birth</label>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">
+                      Place of Birth
+                    </label>
                     <input
                       data-testid="input-place-of-birth"
                       type="text"
-                      value={editValues.placeOfBirth ?? ''}
-                      onChange={(e) => setEditValues((v) => ({ ...v, placeOfBirth: e.target.value || undefined }))}
+                      value={editValues.placeOfBirth ?? ""}
+                      onChange={(e) =>
+                        setEditValues((v) => ({
+                          ...v,
+                          placeOfBirth: e.target.value || undefined,
+                        }))
+                      }
                       placeholder="Place of birth (optional)"
                       className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
                     />
@@ -204,7 +267,7 @@ export function PeopleView() {
                       disabled={updatePerson.isPending}
                       className="bg-gray-900 text-white rounded-xl px-4 py-1.5 text-sm font-medium hover:bg-gray-800 disabled:opacity-60"
                     >
-                      {updatePerson.isPending ? 'Saving...' : 'Save'}
+                      {updatePerson.isPending ? "Saving..." : "Save"}
                     </button>
                     <button
                       onClick={cancelEdit}
@@ -218,7 +281,9 @@ export function PeopleView() {
                 <div>
                   <div className="flex items-start justify-between">
                     <div className="flex items-center flex-wrap gap-1">
-                      <span className="font-semibold text-gray-900">{person.name}</span>
+                      <span className="font-semibold text-gray-900">
+                        {person.name}
+                      </span>
                       <span className="text-xs bg-gray-100 text-gray-600 rounded-full px-2 py-0.5">
                         {age} years old
                       </span>
@@ -228,11 +293,11 @@ export function PeopleView() {
                         </span>
                       )}
                     </div>
-                    <div className="flex gap-2 ml-4 shrink-0">
+                    <div className="flex gap-2 ml-4 shrink-0 bg-transparent">
                       <button
                         data-testid={`btn-edit-${person.id}`}
                         onClick={() => startEdit(person)}
-                        className="text-gray-400 hover:text-gray-700 text-sm px-2 py-1"
+                        className="text-gray-400 hover:text-gray-700 text-sm px-2 py-1 rounded-full hover:bg-gray-50  p-1"
                         aria-label="Edit"
                       >
                         ✏️
@@ -240,7 +305,7 @@ export function PeopleView() {
                       <button
                         data-testid={`btn-delete-${person.id}`}
                         onClick={() => setDeletingId(person.id)}
-                        className="text-gray-400 hover:text-red-600 text-sm px-2 py-1"
+                        className="text-gray-400 hover:text-red-600 text-sm px-2 py-1 rounded-full hover:bg-gray-50  p-1"
                         aria-label="Delete"
                       >
                         🗑
@@ -250,7 +315,7 @@ export function PeopleView() {
 
                   {parents.length > 0 && (
                     <p className="text-sm text-gray-500 mt-1">
-                      Parents: {parents.map((p) => p.name).join(', ')}
+                      Parents: {parents.map((p) => p.name).join(", ")}
                     </p>
                   )}
 
@@ -260,11 +325,13 @@ export function PeopleView() {
                         {children.map((child) => (
                           <span
                             key={child.relationshipId}
-                            className="flex items-center gap-1 text-xs bg-blue-50 text-blue-700 rounded-full px-2 py-0.5"
+                            className="flex items-center gap-1 text-xs bg-blue-50 text-blue-700 rounded-full px-2 py-0.5 hover:bg-blue-100"
                           >
                             {child.person.name}
                             <button
-                              onClick={() => setRemovingRelId(child.relationshipId)}
+                              onClick={() =>
+                                setRemovingRelId(child.relationshipId)
+                              }
                               className="hover:text-blue-900 font-medium"
                               aria-label={`Remove ${child.person.name} as child`}
                             >
@@ -275,10 +342,16 @@ export function PeopleView() {
                       </div>
                       {children.map((child) =>
                         removingRelId === child.relationshipId ? (
-                          <div key={child.relationshipId} className="mt-2 text-sm text-gray-700">
-                            Remove <strong>{child.person.name}</strong> as a child?
+                          <div
+                            key={child.relationshipId}
+                            className="mt-2 text-sm text-gray-700"
+                          >
+                            Remove <strong>{child.person.name}</strong> as a
+                            child?
                             <button
-                              onClick={() => confirmRemoveRel(child.relationshipId)}
+                              onClick={() =>
+                                confirmRemoveRel(child.relationshipId)
+                              }
                               className="text-red-600 font-medium ml-2 hover:text-red-800"
                             >
                               Confirm
@@ -290,7 +363,7 @@ export function PeopleView() {
                               Cancel
                             </button>
                           </div>
-                        ) : null
+                        ) : null,
                       )}
                     </div>
                   )}

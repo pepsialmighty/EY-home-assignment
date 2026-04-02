@@ -1,9 +1,16 @@
 {
   "name": "family-tree",
   "private": true,
-  "workspaces": ["api", "ui"],
+  "workspaces": [
+    "api",
+    "ui"
+  ],
   "scripts": {
     "dev:api": "npm run dev -w api",
     "dev:ui": "npm run dev -w ui"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "@types/node": "^25.5.0"
   }
 }

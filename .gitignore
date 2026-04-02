@@ -36,3 +36,10 @@ Thumbs.db
 
 # Planning documents (working files — never committed)
 planning/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
