@@ -2,6 +2,8 @@
 
 A full-stack application for constructing simple family trees. Create people, assign parent-child relationships, and visualize the tree interactively.
 
+**Live demo:** https://family-tree-ui.fly.dev
+
 ## Features
 
 - Create, edit, and delete people (name, date of birth, place of birth) — inline within the home view, no page navigation required
@@ -93,7 +95,9 @@ docker compose down -v       # stop containers and delete data
 3. API validates input with Zod, enforces domain rules in services, queries SQLite via `node:sqlite`
 4. Responses follow a consistent shape: `{ data: T }` on success, `{ error: { message } }` on failure
 
-**In Docker**, the frontend nginx container proxies `/api/` requests to the `api` container on the internal Docker network. The UI serves the Vite-built static files.
+**In Docker (local)**, the frontend nginx container proxies `/api/` requests to the `api` container on the internal Docker network. The UI serves the Vite-built static files.
+
+**On Fly.io (production)**, the `family-tree-ui` app serves static files via nginx and proxies `/api/` to `https://family-tree-api.fly.dev`. The API app mounts a persistent Fly.io volume at `/app/data` for SQLite storage. Both apps are deployed automatically on every push to `main` via the CD pipeline (`.github/workflows/cd.yml`).
 
 ---
 
@@ -130,7 +134,8 @@ All rules are enforced server-side. The frontend shows server error messages inl
 
 ## API Reference
 
-Base URL: `http://localhost:5000`
+Base URL (local): `http://localhost:5000`  
+Base URL (live): `https://family-tree-api.fly.dev`
 
 All responses: `{ data: T }` on success, `{ error: { message: string } }` on failure.
 
