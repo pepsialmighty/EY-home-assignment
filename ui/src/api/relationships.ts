@@ -28,3 +28,10 @@ export async function deleteRelationship(id: number): Promise<void> {
   const res = await fetch(`/api/relationships/${id}`, { method: 'DELETE' });
   if (!res.ok) return handleErrorResponse(res);
 }
+
+export async function fetchAllRelationships(): Promise<Relationship[]> {
+  const res = await fetch('/api/relationships');
+  if (!res.ok) return handleErrorResponse(res);
+  const body = await res.json();
+  return body.data as Relationship[];
+}

@@ -13,7 +13,10 @@ export function useCreateRelationship() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: createRelationship,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['parents'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['parents'] });
+      qc.invalidateQueries({ queryKey: ['tree'] });
+    },
   });
 }
 
@@ -21,6 +24,9 @@ export function useDeleteRelationship() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: deleteRelationship,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['parents'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['parents'] });
+      qc.invalidateQueries({ queryKey: ['tree'] });
+    },
   });
 }

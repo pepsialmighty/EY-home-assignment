@@ -51,6 +51,11 @@ export function getRelationshipById(id: number): Relationship | undefined {
   return stmt.get(id) as unknown as Relationship | undefined;
 }
 
+export function getAllRelationships(): Relationship[] {
+  const stmt = db.prepare('SELECT id, parent_id AS parentId, child_id AS childId FROM relationships');
+  return stmt.all() as unknown as Relationship[];
+}
+
 // Walks the relationships table upward recursively to collect all ancestor IDs.
 // Used for cycle detection before inserting a new parent-child relationship.
 export function getAllAncestorIds(personId: number): Set<number> {

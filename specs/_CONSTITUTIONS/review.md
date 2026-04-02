@@ -24,6 +24,8 @@ Branch comparison → always **remote** ref (`origin/...`).
 1. **Agent review** — AI analyzes the diff and identifies issues
 2. **Both** — CodeRabbit + agent review (if CodeRabbit available)
 
+> **CodeRabbit** is installed as a VS Code extension in this project. For PRs, it runs automatically. For solo/local work without PRs, trigger it manually on the diff. Always prefer "Both" when CodeRabbit is available.
+
 ### 3. Execute Review
 
 Analyze `git diff <diff-base>`, read changed files fully, identify issues based on constitutions, project patterns, and code quality.

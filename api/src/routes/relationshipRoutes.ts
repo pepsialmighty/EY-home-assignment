@@ -4,6 +4,11 @@ import { createRelationshipSchema } from '../validation/relationshipSchema';
 
 export const relationshipRouter = Router();
 
+relationshipRouter.get('/', (_req: Request, res: Response) => {
+  const relationships = relationshipService.getAllRelationships();
+  res.status(200).json({ data: relationships });
+});
+
 relationshipRouter.post('/', (req: Request, res: Response, next: NextFunction) => {
   const result = createRelationshipSchema.safeParse(req.body);
   if (!result.success) {

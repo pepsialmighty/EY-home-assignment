@@ -10,7 +10,10 @@ export function useCreatePerson() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (dto: PersonDto) => createPerson(dto),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['people'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['people'] });
+      qc.invalidateQueries({ queryKey: ['tree'] });
+    },
   });
 }
 
@@ -18,7 +21,10 @@ export function useUpdatePerson() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ id, dto }: { id: number; dto: PersonDto }) => updatePerson(id, dto),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['people'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['people'] });
+      qc.invalidateQueries({ queryKey: ['tree'] });
+    },
   });
 }
 
@@ -26,6 +32,9 @@ export function useDeletePerson() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: number) => deletePerson(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['people'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['people'] });
+      qc.invalidateQueries({ queryKey: ['tree'] });
+    },
   });
 }

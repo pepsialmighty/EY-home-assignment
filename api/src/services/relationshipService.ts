@@ -7,6 +7,10 @@ import { CreateRelationshipDto, Relationship } from '../models/relationship';
 const MIN_PARENT_AGE_DIFF_YEARS = 15;
 const MAX_PARENTS = 2;
 
+export function getAllRelationships(): Relationship[] {
+  return relationshipDb.getAllRelationships();
+}
+
 export function getParentsOf(childId: number): ParentEntry[] {
   return relationshipDb.getParentsOf(childId);
 }
