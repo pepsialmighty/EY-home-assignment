@@ -10,7 +10,6 @@
     "dev:ui": "npm run dev -w ui"
   },
   "devDependencies": {
-    "@playwright/test": "^1.59.1",
     "@types/node": "^25.5.0"
   }
 }
