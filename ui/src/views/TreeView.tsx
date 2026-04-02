@@ -14,11 +14,11 @@ export function TreeView() {
   }
 
   if (!data || data.nodes.length === 0) {
-    return <p>No people yet. Add some from the People tab.</p>;
+    return <p data-testid="empty-tree">No people yet. Add some from the People tab.</p>;
   }
 
   return (
-    <div style={{ height: '100vh' }}>
+    <div data-testid="tree-view" style={{ height: '100vh' }}>
       <ReactFlow nodes={data.nodes} edges={data.edges} fitView>
         <Background />
         <Controls />
