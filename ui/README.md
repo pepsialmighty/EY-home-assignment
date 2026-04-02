@@ -1,73 +1,92 @@
-# React + TypeScript + Vite
+# UI — Family Tree Mini-Builder
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + TypeScript frontend built with Vite, served via nginx in Docker.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+| Concern       | Technology                      |
+| ------------- | ------------------------------- |
+| Framework     | React 19 + TypeScript           |
+| Build tool    | Vite 8                          |
+| Routing       | React Router DOM 7              |
+| Server state  | TanStack Query (React Query) 5  |
+| Visualization | @xyflow/react (React Flow) 12   |
+| Testing       | Vitest + React Testing Library  |
+| E2E           | Playwright (Chromium)           |
 
-## React Compiler
+## Directory Structure
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+ui/
+├── src/
+│   ├── main.tsx          # Vite entry point
+│   ├── App.tsx           # Root component with BrowserRouter and nav
+│   ├── views/            # Page-level components (PeopleView, TreeView)
+│   ├── components/       # Reusable components (PersonForm, ParentManager)
+│   ├── api/              # Fetch functions and TanStack Query hooks
+│   └── types/            # Shared TypeScript interfaces
+├── e2e/                  # Playwright E2E tests
+├── playwright.config.ts  # Playwright configuration
+└── package.json
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Getting Started
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```bash
+# From repo root (installs all workspaces)
+npm ci
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Start dev server (http://localhost:3000) — requires api running on :5000
+cd ui && npm run dev
+
+# Type check
+cd ui && npm run check-types
+
+# Build for production
+cd ui && npm run build
+```
+
+## Scripts
+
+| Script        | Description                                    |
+| ------------- | ---------------------------------------------- |
+| `dev`         | Start Vite dev server on port 3000             |
+| `build`       | Type-check + Vite production build             |
+| `check-types` | Run `tsc -b` (full project reference check)    |
+| `test`        | Vitest unit tests                              |
+| `test:e2e`    | Playwright E2E tests (auto-starts Vite server) |
+
+## Views
+
+### `/` — People
+
+- List all people with edit and delete actions
+- Inline add/edit form (`PersonForm`)
+- `ParentManager` per person: shows current parents, add/remove controls
+- All server validation errors shown inline
+
+### `/tree` — Family Tree
+
+- Interactive React Flow canvas with zoom/pan controls
+- All people as nodes, all parent-child relationships as edges
+- Empty state when no people exist
+- Error state on fetch failure
+- Auto-refreshes when people or relationships change (TanStack Query invalidation)
+
+## E2E Tests
+
+10 tests across 3 spec files — run serially (`workers: 1`) to avoid shared-DB contamination:
+
+| File                            | Scenarios                                     |
+| ------------------------------- | --------------------------------------------- |
+| `e2e/personManagement.spec.ts`  | Create, edit, delete, future DOB rejection    |
+| `e2e/relationships.spec.ts`     | Happy path, age gap, parent limit, cycle      |
+| `e2e/treeVisualization.spec.ts` | Empty state, tree renders with nodes/edges    |
+
+Each test cleans up all people via the API in `beforeEach`.
+
+```bash
+# Requires api server running on :5000
+cd api && npm run dev &
+cd ui && npm run test:e2e
 ```
