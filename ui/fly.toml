@@ -2,7 +2,7 @@ app = 'family-tree-ui'
 primary_region = 'iad'
 
 [build]
-  dockerfile = 'ui/Dockerfile'
+  dockerfile = 'Dockerfile'
   [build.args]
     NGINX_CONF = 'ui/nginx.fly.conf'
 
