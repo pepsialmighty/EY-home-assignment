@@ -1,0 +1,11 @@
+node_modules
+api/node_modules
+ui/node_modules
+api/dist
+ui/dist
+api/data
+planning
+.git
+.claude
+ui/e2e
+ui/test-results

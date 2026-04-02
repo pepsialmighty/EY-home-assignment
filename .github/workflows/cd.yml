@@ -13,33 +13,25 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
+
+      # Install all workspace deps from root lock file
+      - name: Install dependencies
+        run: npm ci
 
       # Backend
-      - name: Install api dependencies
-        run: npm ci
-        working-directory: api
-
       - name: Build api
-        run: npm run build
-        working-directory: api
+        run: npm run build --workspace=api
 
       - name: Test api
-        run: npm test
-        working-directory: api
+        run: npm test --workspace=api
 
       # Frontend
-      - name: Install ui dependencies
-        run: npm ci
-        working-directory: ui
-
       - name: Build ui
-        run: npm run build
-        working-directory: ui
+        run: npm run build --workspace=ui
 
       - name: Test ui (unit)
-        run: npm test
-        working-directory: ui
+        run: npm test --workspace=ui
         continue-on-error: true  # No unit test files yet; remove once added
 
       # E2E
@@ -48,20 +40,16 @@ jobs:
         working-directory: ui
 
       - name: Start api server
-        run: npm run dev &
-        working-directory: api
+        run: npm run dev --workspace=api &
 
       - name: Start ui server
-        run: npm run dev &
-        working-directory: ui
+        run: npm run dev --workspace=ui &
 
       - name: Wait for servers
-        run: |
-          npx wait-on http://localhost:5000/health http://localhost:3000 --timeout 30000
+        run: npx wait-on http://localhost:5000/health http://localhost:3000 --timeout 30000
 
       - name: Run E2E tests
-        run: npm run test:e2e
-        working-directory: ui
+        run: npm run test:e2e --workspace=ui
 
   publish:
     needs: test
@@ -78,7 +66,8 @@ jobs:
       - name: Build and push api image
         uses: docker/build-push-action@v5
         with:
-          context: ./api
+          context: .
+          file: api/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/family-tree-api:${{ github.ref_name }}
@@ -87,7 +76,8 @@ jobs:
       - name: Build and push ui image
         uses: docker/build-push-action@v5
         with:
-          context: ./ui
+          context: .
+          file: ui/Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/family-tree-ui:${{ github.ref_name }}
