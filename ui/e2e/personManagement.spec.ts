@@ -50,9 +50,9 @@ test('delete a person and verify they are removed from the list', async ({ page,
   await page.goto('/');
   await expect(page.getByTestId('people-list')).toContainText('Charlie');
 
-  page.once('dialog', (dialog) => dialog.accept());
   const row = page.getByTestId('people-list').locator('li').filter({ hasText: 'Charlie' });
   await row.locator('[data-testid^="btn-delete-"]').click();
+  await row.locator('[data-testid^="btn-delete-confirm-"]').click();
 
   await expect(page.getByTestId('people-list')).not.toContainText('Charlie');
 });

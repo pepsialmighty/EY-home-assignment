@@ -4,10 +4,12 @@ A full-stack application for constructing simple family trees. Create people, as
 
 ## Features
 
-- Create, edit, and delete people (name, date of birth, place of birth)
-- Assign and remove parent-child relationships
+- Create, edit, and delete people (name, date of birth, place of birth) — inline within the home view, no page navigation required
+- Assign parent-child relationships via a dedicated form page; remove them via inline confirmation on the home view
 - Validation: 0–2 parents, 15-year minimum age gap, no cycles, no future date of birth
-- Interactive family tree visualization (React Flow)
+- Interactive family tree visualization (React Flow) with root ancestor filter and hierarchical node layout
+- Toast notifications for all mutation results (add, update, delete, remove relationship)
+- Clean Tailwind CSS UI with stats cards, person cards (age tag, location tag, parents, children pills), and inline edit/delete confirmations
 - 10 Playwright E2E tests + 33 backend integration tests
 
 ---
@@ -229,13 +231,28 @@ This project was built using **[Claude Code](https://claude.ai/code)** (Anthropi
 
 ---
 
+## UI Design Decisions
+
+### Tree View — Root Ancestor Filter
+
+The family tree dropdown lists only people who are **root ancestors with at least one child** (i.e. no parents, but have children of their own). People with no relationships are excluded.
+
+**Rationale:** A family tree is read top-down from a founding ancestor. Showing a person with no relationships in the dropdown would produce a canvas with a single node and no edges — not a useful visualisation. Restricting to root ancestors with children ensures every option in the dropdown shows a meaningful lineage.
+
+If no such root ancestors exist (e.g. all people have been added but no relationships created yet), the view shows a prompt to add relationships first.
+
+### Inline Edit & Delete (Home View)
+
+Edit and delete actions happen inline within each person card rather than navigating to a separate page. This matches the brief's intent to keep the home view as the primary workspace. Delete uses a styled inline confirmation prompt — not `window.confirm()`.
+
+---
+
 ## What I Would Do With More Time
 
-1. **Tree layout** — Use a proper hierarchical layout algorithm (e.g. Dagre) so parent nodes are always above children rather than relying on React Flow's `fitView`
+1. **Tree layout** — Replace the client-side BFS layout with Dagre or ELK for wide trees with many siblings — the current layout works well for linear chains but can produce wide layouts for large families
 2. **Siblings display** — Show sibling relationships derived from shared parents
 3. **Search & filter** — Filter the people list and highlight nodes in the tree
 4. **UI unit tests** — Add Vitest + React Testing Library tests for form validation and component state
 5. **Auth** — Add user accounts so multiple family trees can be managed independently
 6. **Export** — PDF or image export of the tree
-7. **Better error UX** — Toast notifications for mutation results instead of inline-only errors
-8. **Pagination** — For large family trees, paginate the people list
+7. **Pagination** — For large family trees, paginate the people list

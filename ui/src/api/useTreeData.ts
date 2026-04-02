@@ -2,10 +2,13 @@ import { useQuery } from '@tanstack/react-query';
 import type { Node, Edge } from '@xyflow/react';
 import { fetchPeople } from './people';
 import { fetchAllRelationships } from './relationships';
+import type { Person, Relationship } from '../types/person';
 
 export interface TreeData {
   nodes: Node[];
   edges: Edge[];
+  people: Person[];
+  relationships: Relationship[];
 }
 
 async function fetchTreeData(): Promise<TreeData> {
@@ -16,7 +19,7 @@ async function fetchTreeData(): Promise<TreeData> {
 
   const nodes: Node[] = people.map((person) => ({
     id: String(person.id),
-    data: { label: person.name },
+    data: { label: person.name, dateOfBirth: person.dateOfBirth },
     position: { x: 0, y: 0 },
   }));
 
@@ -26,7 +29,7 @@ async function fetchTreeData(): Promise<TreeData> {
     target: String(rel.childId),
   }));
 
-  return { nodes, edges };
+  return { nodes, edges, people, relationships };
 }
 
 export function useTreeData() {

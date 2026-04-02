@@ -19,14 +19,19 @@ React + TypeScript frontend built with Vite, served via nginx in Docker.
 ```
 ui/
 ├── src/
-│   ├── main.tsx          # Vite entry point
-│   ├── App.tsx           # Root component with BrowserRouter and nav
-│   ├── views/            # Page-level components (PeopleView, TreeView)
-│   ├── components/       # Reusable components (PersonForm, ParentManager)
-│   ├── api/              # Fetch functions and TanStack Query hooks
-│   └── types/            # Shared TypeScript interfaces
-├── e2e/                  # Playwright E2E tests
-├── playwright.config.ts  # Playwright configuration
+│   ├── main.tsx              # Vite entry point
+│   ├── App.tsx               # Root component: BrowserRouter, shell layout, routes
+│   ├── views/                # Page-level components
+│   │   ├── PeopleView.tsx    # Home view (/)
+│   │   ├── AddPersonView.tsx # Add person form (/add-person)
+│   │   ├── AddRelationshipView.tsx  # Add relationship form (/add-relationship)
+│   │   └── TreeView.tsx      # Family tree canvas (/tree)
+│   ├── components/           # Reusable components (PersonForm, Toast)
+│   ├── context/              # React contexts (ToastContext)
+│   ├── api/                  # Fetch functions and TanStack Query hooks
+│   └── types/                # Shared TypeScript interfaces
+├── e2e/                      # Playwright E2E tests
+├── playwright.config.ts      # Playwright configuration
 └── package.json
 ```
 
@@ -58,20 +63,38 @@ cd ui && npm run build
 
 ## Views
 
-### `/` — People
+### `/` — Home
 
-- List all people with edit and delete actions
-- Inline add/edit form (`PersonForm`)
-- `ParentManager` per person: shows current parents, add/remove controls
-- All server validation errors shown inline
+- Stats cards: total people and relationships counts
+- Person cards with age tag, location tag, parents text, and children pills
+- Inline edit mode per card: name, date of birth, place of birth inputs with field-level validation and API error banner
+- Inline delete confirmation per card (no `window.confirm()`)
+- Children pill `×` button with inline confirmation to remove a relationship
+- Empty state with call-to-action when no people exist
+- Toast notifications on all successful mutations
+
+### `/add-person` — Add Person
+
+- Centered card form: name, date of birth, place of birth
+- Inline field validation and API error banner
+- Navigates back to `/` with a toast on success
+
+### `/add-relationship` — Add Relationship
+
+- Centered card form: parent select, child select
+- Child dropdown excludes people who already have 2 parents
+- Inline validation and API error banner
+- Navigates back to `/` with a toast on success
 
 ### `/tree` — Family Tree
 
-- Interactive React Flow canvas with zoom/pan controls
-- All people as nodes, all parent-child relationships as edges
-- Empty state when no people exist
-- Error state on fetch failure
-- Auto-refreshes when people or relationships change (TanStack Query invalidation)
+- Root ancestor dropdown: lists people who have no parents but have at least one child; selecting one renders that lineage only
+- Hierarchical node layout (client-side BFS): root at top, each generation below, no overlapping nodes
+- Custom node cards: person name + date of birth
+- `smoothstep` edges in neutral gray
+- Fixed-height canvas (`600px`); no viewport overflow
+- Empty state when no people exist; "no root ancestors" message when people exist but no relationships do
+- Auto-refreshes on data changes (TanStack Query invalidation)
 
 ## E2E Tests
 
