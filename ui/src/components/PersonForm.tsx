@@ -50,7 +50,7 @@ export function PersonForm({ onSubmit, defaultValues, submitLabel, apiError, isS
           onChange={(e) => setName(e.target.value)}
           placeholder="Enter full name"
           data-testid="input-name"
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 hover:border-gray-300 transition-colors"
         />
         {submitted && errors.name && (
           <span data-testid="field-error-name" className="text-red-500 text-xs mt-1 block">
@@ -69,7 +69,7 @@ export function PersonForm({ onSubmit, defaultValues, submitLabel, apiError, isS
           value={dateOfBirth}
           onChange={(e) => setDateOfBirth(e.target.value)}
           data-testid="input-dob"
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 hover:border-gray-300 transition-colors"
         />
         {submitted && errors.dateOfBirth && (
           <span data-testid="field-error-dateOfBirth" className="text-red-500 text-xs mt-1 block">
@@ -89,7 +89,7 @@ export function PersonForm({ onSubmit, defaultValues, submitLabel, apiError, isS
           onChange={(e) => setPlaceOfBirth(e.target.value)}
           placeholder="e.g., New York, USA"
           data-testid="input-place-of-birth"
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 hover:border-gray-300 transition-colors"
         />
       </div>
 
@@ -106,7 +106,7 @@ export function PersonForm({ onSubmit, defaultValues, submitLabel, apiError, isS
         type="submit"
         data-testid="btn-submit"
         disabled={isSubmitting}
-        className="w-full bg-gray-900 text-white rounded-xl px-4 py-2 text-sm font-medium hover:bg-gray-800 disabled:opacity-60"
+        className="w-full bg-gray-900 text-white rounded-xl px-4 py-2 text-sm font-medium hover:bg-gray-800 disabled:opacity-60 transition-colors"
       >
         {isSubmitting ? 'Saving...' : submitLabel}
       </button>

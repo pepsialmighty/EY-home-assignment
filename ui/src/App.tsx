@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { PeopleView } from './views/PeopleView';
 import { AddPersonView } from './views/AddPersonView';
 import { AddRelationshipView } from './views/AddRelationshipView';
@@ -17,8 +18,9 @@ function AppShell() {
 
       <div className="max-w-[1126px] mx-auto px-6 py-6">
         {!isHome && (
-          <Link to="/" className="text-sm text-gray-600 hover:text-gray-900 mb-4 inline-block">
-            ← Back
+          <Link to="/" className="inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 transition-colors mb-4">
+            <ArrowLeftIcon className="w-4 h-4" />
+            Back
           </Link>
         )}
 
@@ -27,19 +29,19 @@ function AppShell() {
             <Link
               to="/add-person"
               data-testid="btn-add-person"
-              className="bg-gray-900 text-white rounded-xl px-4 py-2 text-sm font-medium hover:bg-gray-800"
+              className="bg-gray-900 text-white rounded-xl px-4 py-2 text-sm font-medium hover:bg-gray-800 transition-colors"
             >
               Add Person
             </Link>
             <Link
               to="/add-relationship"
-              className="bg-gray-100 text-gray-900 rounded-xl px-4 py-2 text-sm font-medium hover:bg-gray-200"
+              className="bg-gray-100 text-gray-900 rounded-xl px-4 py-2 text-sm font-medium hover:bg-gray-200 transition-colors"
             >
               Add Relationship
             </Link>
             <Link
               to="/tree"
-              className="bg-gray-100 text-gray-900 rounded-xl px-4 py-2 text-sm font-medium hover:bg-gray-200"
+              className="bg-gray-100 text-gray-900 rounded-xl px-4 py-2 text-sm font-medium hover:bg-gray-200 transition-colors"
             >
               Family Tree
             </Link>

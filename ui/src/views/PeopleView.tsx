@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import type { Person, PersonDto } from "../types/person";
 import { usePeople, useUpdatePerson, useDeletePerson } from "../api/usePeople";
 import {
@@ -123,7 +124,7 @@ export function PeopleView() {
         <p className="mb-4">No people yet — click Add Person to get started</p>
         <Link
           to="/add-person"
-          className="bg-gray-900 text-white rounded-xl px-4 py-2 text-sm font-medium hover:bg-gray-800"
+          className="bg-gray-900 text-white rounded-xl px-4 py-2 text-sm font-medium hover:bg-gray-800 transition-colors"
         >
           Add Person
         </Link>
@@ -134,13 +135,13 @@ export function PeopleView() {
   return (
     <div>
       <div className="flex gap-4 mb-6">
-        <div className="flex-1 rounded-xl border border-gray-200 p-4 text-center">
+        <div className="flex-1 rounded-xl border border-gray-200 p-4 text-center hover:border-gray-300 hover:shadow-sm transition-all">
           <div className="text-3xl font-bold text-gray-900">
             {people.length}
           </div>
           <div className="text-sm text-gray-500">People</div>
         </div>
-        <div className="flex-1 rounded-xl border border-gray-200 p-4 text-center">
+        <div className="flex-1 rounded-xl border border-gray-200 p-4 text-center hover:border-gray-300 hover:shadow-sm transition-all">
           <div className="text-3xl font-bold text-gray-900">
             {relationships.length}
           </div>
@@ -198,7 +199,7 @@ export function PeopleView() {
                       onChange={(e) =>
                         setEditValues((v) => ({ ...v, name: e.target.value }))
                       }
-                      className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+                      className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 hover:border-gray-300 transition-colors"
                     />
                     {editSubmitted && editErrors.name && (
                       <span
@@ -223,7 +224,7 @@ export function PeopleView() {
                           dateOfBirth: e.target.value,
                         }))
                       }
-                      className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+                      className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 hover:border-gray-300 transition-colors"
                     />
                     {editSubmitted && editErrors.dateOfBirth && (
                       <span
@@ -249,7 +250,7 @@ export function PeopleView() {
                         }))
                       }
                       placeholder="Place of birth (optional)"
-                      className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+                      className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 hover:border-gray-300 transition-colors"
                     />
                   </div>
                   {editApiError && (
@@ -265,13 +266,13 @@ export function PeopleView() {
                       data-testid="btn-submit"
                       onClick={() => handleEditSave(person.id)}
                       disabled={updatePerson.isPending}
-                      className="bg-gray-900 text-white rounded-xl px-4 py-1.5 text-sm font-medium hover:bg-gray-800 disabled:opacity-60"
+                      className="bg-gray-900 text-white rounded-xl px-4 py-1.5 text-sm font-medium hover:bg-gray-800 disabled:opacity-60 transition-colors"
                     >
                       {updatePerson.isPending ? "Saving..." : "Save"}
                     </button>
                     <button
                       onClick={cancelEdit}
-                      className="bg-gray-100 text-gray-900 rounded-xl px-4 py-1.5 text-sm font-medium hover:bg-gray-200"
+                      className="bg-gray-100 text-gray-900 rounded-xl px-4 py-1.5 text-sm font-medium hover:bg-gray-200 transition-colors"
                     >
                       Cancel
                     </button>
@@ -293,22 +294,22 @@ export function PeopleView() {
                         </span>
                       )}
                     </div>
-                    <div className="flex gap-2 ml-4 shrink-0 bg-transparent">
+                    <div className="flex gap-2 ml-4 shrink-0">
                       <button
                         data-testid={`btn-edit-${person.id}`}
                         onClick={() => startEdit(person)}
-                        className="text-gray-400 hover:text-gray-700 text-sm px-2 py-1 rounded-full hover:bg-gray-50  p-1"
+                        className="text-gray-400 hover:text-gray-700 p-1.5 rounded-full hover:bg-gray-100 transition-colors"
                         aria-label="Edit"
                       >
-                        ✏️
+                        <PencilSquareIcon className="w-4 h-4" />
                       </button>
                       <button
                         data-testid={`btn-delete-${person.id}`}
                         onClick={() => setDeletingId(person.id)}
-                        className="text-gray-400 hover:text-red-600 text-sm px-2 py-1 rounded-full hover:bg-gray-50  p-1"
+                        className="text-gray-400 hover:text-red-600 p-1.5 rounded-full hover:bg-red-50 transition-colors"
                         aria-label="Delete"
                       >
-                        🗑
+                        <TrashIcon className="w-4 h-4" />
                       </button>
                     </div>
                   </div>

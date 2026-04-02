@@ -141,7 +141,7 @@ export function TreeView() {
           id="root-ancestor"
           value={effectiveRootId ?? ''}
           onChange={(e) => setSelectedRootId(e.target.value)}
-          className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+          className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 hover:border-gray-300 cursor-pointer transition-colors"
         >
           {rootAncestors.map((p) => (
             <option key={p.id} value={String(p.id)}>

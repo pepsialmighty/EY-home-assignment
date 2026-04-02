@@ -54,7 +54,7 @@ export function AddRelationshipView() {
             data-testid="select-parent"
             value={parentId}
             onChange={(e) => setParentId(e.target.value)}
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 hover:border-gray-300 cursor-pointer transition-colors"
           >
             <option value="">Select parent...</option>
             {people.map((p) => (
@@ -75,7 +75,7 @@ export function AddRelationshipView() {
             data-testid="select-child"
             value={childId}
             onChange={(e) => setChildId(e.target.value)}
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 hover:border-gray-300 cursor-pointer transition-colors"
           >
             <option value="">Select child...</option>
             {eligibleChildren.map((p) => (
@@ -103,13 +103,13 @@ export function AddRelationshipView() {
           data-testid="btn-submit"
           onClick={handleSubmit}
           disabled={createRelationship.isPending}
-          className="w-full bg-gray-900 text-white rounded-xl px-4 py-2 text-sm font-medium hover:bg-gray-800 disabled:opacity-60"
+          className="w-full bg-gray-900 text-white rounded-xl px-4 py-2 text-sm font-medium hover:bg-gray-800 disabled:opacity-60 transition-colors"
         >
           {createRelationship.isPending ? 'Saving...' : 'Add Relationship'}
         </button>
         <button
           onClick={() => navigate('/')}
-          className="w-full bg-gray-100 text-gray-900 rounded-xl px-4 py-2 text-sm font-medium hover:bg-gray-200 mt-3"
+          className="w-full bg-gray-100 text-gray-900 rounded-xl px-4 py-2 text-sm font-medium hover:bg-gray-200 mt-3 transition-colors"
         >
           Cancel
         </button>
