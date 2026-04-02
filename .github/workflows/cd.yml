@@ -1,0 +1,94 @@
+name: CD
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Backend
+      - name: Install api dependencies
+        run: npm ci
+        working-directory: api
+
+      - name: Build api
+        run: npm run build
+        working-directory: api
+
+      - name: Test api
+        run: npm test
+        working-directory: api
+
+      # Frontend
+      - name: Install ui dependencies
+        run: npm ci
+        working-directory: ui
+
+      - name: Build ui
+        run: npm run build
+        working-directory: ui
+
+      - name: Test ui (unit)
+        run: npm test
+        working-directory: ui
+        continue-on-error: true  # No unit test files yet; remove once added
+
+      # E2E
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+        working-directory: ui
+
+      - name: Start api server
+        run: npm run dev &
+        working-directory: api
+
+      - name: Start ui server
+        run: npm run dev &
+        working-directory: ui
+
+      - name: Wait for servers
+        run: |
+          npx wait-on http://localhost:5000/health http://localhost:3000 --timeout 30000
+
+      - name: Run E2E tests
+        run: npm run test:e2e
+        working-directory: ui
+
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push api image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./api
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/family-tree-api:${{ github.ref_name }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/family-tree-api:latest
+
+      - name: Build and push ui image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./ui
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/family-tree-ui:${{ github.ref_name }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/family-tree-ui:latest
