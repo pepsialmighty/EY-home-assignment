@@ -7,9 +7,11 @@ A full-stack application for constructing simple family trees. Create people, as
 ## Features
 
 - Create, edit, and delete people (name, date of birth, place of birth) — inline within the home view, no page navigation required
-- Assign parent-child relationships via a dedicated form page; remove them via inline confirmation on the home view
+- Assign parent-child relationships via form or by dragging directly between nodes on the tree canvas
+- Remove relationships via inline confirmation on the People tab or by clicking × on a tree edge
 - Validation: 0–2 parents, 15-year minimum age gap, no cycles, no future date of birth
-- Interactive family tree visualization (React Flow) with root ancestor filter and hierarchical node layout
+- Interactive family tree visualization (React Flow) — tab-based home view with tree as the default, hierarchical layout, root ancestor filter
+- localStorage cache (React Query persistence) — data loads instantly on return visits while a background refetch runs
 - Toast notifications for all mutation results (add, update, delete, remove relationship)
 - Clean Tailwind CSS UI with stats cards, person cards (age tag, location tag, parents, children pills), and inline edit/delete confirmations
 - 10 Playwright E2E tests + 33 backend integration tests
@@ -65,7 +67,7 @@ cd ui && npm run test:e2e
 docker compose up --build
 ```
 
-The app is available at **http://localhost:3000**. The API runs at **http://localhost:5000**.
+The app is available at **http://localhost:80**. The API runs internally (not exposed publicly).
 
 Data is persisted in a Docker volume (`db-data`) and survives container restarts.
 
@@ -135,7 +137,7 @@ All rules are enforced server-side. The frontend shows server error messages inl
 ## API Reference
 
 Base URL (local): `http://localhost:5000`  
-Base URL (live): `https://family-tree-api.fly.dev`
+Base URL (live): `http://13.60.237.172/api`
 
 All responses: `{ data: T }` on success, `{ error: { message: string } }` on failure.
 
@@ -238,6 +240,10 @@ This project was built using **[Claude Code](https://claude.ai/code)** (Anthropi
 
 ## UI Design Decisions
 
+### Tab-Based Home View
+
+The home view uses a tab bar with **Family Tree** (default) and **People** tabs. The tree is shown first since it is the primary output of the app. The People tab hosts the list, inline edit/delete, and the Add Person / Add Relationship action buttons.
+
 ### Tree View — Root Ancestor Filter
 
 The family tree dropdown lists only people who are **root ancestors with at least one child** (i.e. no parents, but have children of their own). People with no relationships are excluded.
@@ -246,9 +252,17 @@ The family tree dropdown lists only people who are **root ancestors with at leas
 
 If no such root ancestors exist (e.g. all people have been added but no relationships created yet), the view shows a prompt to add relationships first.
 
-### Inline Edit & Delete (Home View)
+### Interactive Tree Connections
 
-Edit and delete actions happen inline within each person card rather than navigating to a separate page. This matches the brief's intent to keep the home view as the primary workspace. Delete uses a styled inline confirmation prompt — not `window.confirm()`.
+Relationships can be created and removed directly on the tree canvas:
+- **Drag** from a node's bottom handle to another node's top handle → calls `POST /api/relationships`
+- **Click ×** on any edge → calls `DELETE /api/relationships/:id`
+
+Server validation errors (age gap, cycle, parent limit) surface as toasts.
+
+### Inline Edit & Delete (People Tab)
+
+Edit and delete actions happen inline within each person card. Delete uses a styled inline confirmation prompt — not `window.confirm()`.
 
 ---
 
