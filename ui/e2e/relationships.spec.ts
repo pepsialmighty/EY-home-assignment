@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type APIRequestContext } from '@playwright/test';
 
 test.beforeEach(async ({ request }) => {
   const res = await request.get('http://localhost:5000/api/people');
@@ -8,7 +8,7 @@ test.beforeEach(async ({ request }) => {
   }
 });
 
-async function createPerson(request: Parameters<typeof test>[1] extends { request: infer R } ? R : never, name: string, dob: string) {
+async function createPerson(request: APIRequestContext, name: string, dob: string) {
   const res = await request.post('http://localhost:5000/api/people', {
     data: { name, dateOfBirth: dob },
   });
@@ -26,8 +26,11 @@ test('happy path — assign a relationship and verify child shown on home', asyn
   await page.getByTestId('select-child').selectOption({ label: 'Child Person' });
   await page.getByTestId('btn-submit').click();
 
-  // On success, navigates back to home
+  // On success, navigates back to home (Tree tab is active by default — switch to People).
   await expect(page).toHaveURL('/');
+  await page.getByRole('button', { name: 'People' }).click();
+  // Wait for any background refetches triggered by the tab switch to settle before asserting.
+  await page.waitForLoadState('networkidle');
   await expect(page.getByTestId('people-list')).toContainText('Child Person');
 });
 
