@@ -6,11 +6,13 @@ import App from './App.tsx'
 import { ToastProvider } from './context/ToastContext.tsx'
 import './index.css'
 
+const HOUR_MS = 1000 * 60 * 60
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      // Keep cache for 24 hours so localStorage persister has time to restore it
-      gcTime: 1000 * 60 * 60 * 24,
+      staleTime: 0,          // Always refetch from server in the background
+      gcTime: HOUR_MS,       // Match maxAge — don't keep in-memory cache longer than the persisted one
     },
   },
 })
@@ -38,7 +40,7 @@ const persister = {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
+    <PersistQueryClientProvider client={queryClient} persistOptions={{ persister, maxAge: HOUR_MS }}>
       <ToastProvider>
         <App />
       </ToastProvider>
