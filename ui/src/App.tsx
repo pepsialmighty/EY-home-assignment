@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { PeopleView } from './views/PeopleView';
@@ -5,9 +6,12 @@ import { AddPersonView } from './views/AddPersonView';
 import { AddRelationshipView } from './views/AddRelationshipView';
 import { TreeView } from './views/TreeView';
 
+type Tab = 'tree' | 'people';
+
 function AppShell() {
   const location = useLocation();
   const isHome = location.pathname === '/';
+  const [activeTab, setActiveTab] = useState<Tab>('tree');
 
   return (
     <div>
@@ -25,34 +29,38 @@ function AppShell() {
         )}
 
         {isHome && (
-          <div className="flex gap-3 mb-6">
-            <Link
-              to="/add-person"
-              data-testid="btn-add-person"
-              className="bg-gray-900 text-white rounded-xl px-4 py-2 text-sm font-medium hover:bg-gray-800 transition-colors"
-            >
-              Add Person
-            </Link>
-            <Link
-              to="/add-relationship"
-              className="bg-gray-100 text-gray-900 rounded-xl px-4 py-2 text-sm font-medium hover:bg-gray-200 transition-colors"
-            >
-              Add Relationship
-            </Link>
-            <Link
-              to="/tree"
-              className="bg-gray-100 text-gray-900 rounded-xl px-4 py-2 text-sm font-medium hover:bg-gray-200 transition-colors"
-            >
-              Family Tree
-            </Link>
-          </div>
+          <>
+            <div className="flex gap-1 border-b border-gray-200 mb-6">
+              <button
+                onClick={() => setActiveTab('tree')}
+                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                  activeTab === 'tree'
+                    ? 'border-gray-900 text-gray-900'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                Family Tree
+              </button>
+              <button
+                onClick={() => setActiveTab('people')}
+                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                  activeTab === 'people'
+                    ? 'border-gray-900 text-gray-900'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                People
+              </button>
+            </div>
+
+            {activeTab === 'tree' ? <TreeView /> : <PeopleView />}
+          </>
         )}
 
         <Routes>
-          <Route path="/" element={<PeopleView />} />
+          <Route path="/" element={null} />
           <Route path="/add-person" element={<AddPersonView />} />
           <Route path="/add-relationship" element={<AddRelationshipView />} />
-          <Route path="/tree" element={<TreeView />} />
         </Routes>
       </div>
     </div>

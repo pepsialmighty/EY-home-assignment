@@ -9,7 +9,7 @@ test.beforeEach(async ({ request }) => {
 });
 
 test('empty state shown when no people exist', async ({ page }) => {
-  await page.goto('/tree');
+  await page.goto('/');
   await expect(page.getByTestId('empty-tree')).toBeVisible();
 });
 
@@ -28,7 +28,7 @@ test('tree renders nodes and edges after creating people and a relationship', as
     data: { parentId: parent.id, childId: child.id },
   });
 
-  await page.goto('/tree');
+  await page.goto('/');
 
   await expect(page.getByTestId('tree-view')).toBeVisible();
   // React Flow renders nodes inside its canvas

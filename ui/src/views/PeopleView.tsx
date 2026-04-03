@@ -134,6 +134,22 @@ export function PeopleView() {
 
   return (
     <div>
+      <div className="flex gap-3 mb-6">
+        <Link
+          to="/add-person"
+          data-testid="btn-add-person"
+          className="bg-gray-900 text-white rounded-xl px-4 py-2 text-sm font-medium hover:bg-gray-800 transition-colors"
+        >
+          Add Person
+        </Link>
+        <Link
+          to="/add-relationship"
+          className="bg-gray-100 text-gray-900 rounded-xl px-4 py-2 text-sm font-medium hover:bg-gray-200 transition-colors"
+        >
+          Add Relationship
+        </Link>
+      </div>
+
       <div className="flex gap-4 mb-6">
         <div className="flex-1 rounded-xl border border-gray-200 p-4 text-center hover:border-gray-300 hover:shadow-sm transition-all">
           <div className="text-3xl font-bold text-gray-900">

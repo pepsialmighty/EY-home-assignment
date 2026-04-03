@@ -11,6 +11,7 @@ test.beforeEach(async ({ request }) => {
 
 test("create a person and verify they appear in the list", async ({ page }) => {
   await page.goto("/");
+  await page.getByRole("button", { name: "People" }).click();
 
   await page.getByTestId("btn-add-person").click();
   await page.getByTestId("input-name").fill("Alice");
@@ -29,6 +30,7 @@ test("edit a person and verify updated name in list", async ({
   });
 
   await page.goto("/");
+  await page.getByRole("button", { name: "People" }).click();
 
   const list = page.getByTestId("people-list");
   await expect(list).toContainText("Bob");
@@ -58,6 +60,7 @@ test("delete a person and verify they are removed from the list", async ({
   });
 
   await page.goto("/");
+  await page.getByRole("button", { name: "People" }).click();
   await expect(page.getByTestId("people-list")).toContainText("Charlie");
 
   const row = page
@@ -72,6 +75,7 @@ test("delete a person and verify they are removed from the list", async ({
 
 test("future DOB is rejected with field error", async ({ page }) => {
   await page.goto("/");
+  await page.getByRole("button", { name: "People" }).click();
   await page.getByTestId("btn-add-person").click();
 
   const tomorrow = new Date();
