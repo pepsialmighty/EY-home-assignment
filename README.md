@@ -2,7 +2,7 @@
 
 A full-stack application for constructing simple family trees. Create people, assign parent-child relationships, and visualize the tree interactively.
 
-**Live demo:** https://family-tree-ui.fly.dev
+**Live demo:** http://13.60.237.172
 
 ## Features
 
@@ -97,7 +97,7 @@ docker compose down -v       # stop containers and delete data
 
 **In Docker (local)**, the frontend nginx container proxies `/api/` requests to the `api` container on the internal Docker network. The UI serves the Vite-built static files.
 
-**On Fly.io (production)**, the `family-tree-ui` app serves static files via nginx and proxies `/api/` to `https://family-tree-api.fly.dev`. The API app mounts a persistent Fly.io volume at `/app/data` for SQLite storage. Both apps are deployed automatically on every push to `main` via the CD pipeline (`.github/workflows/cd.yml`).
+**On AWS EC2 (production)**, both containers run on a single t3.micro instance via `docker compose`. The UI nginx container listens on port 80 and proxies `/api/` to the API container on the internal Docker network (port 5000 is not publicly exposed). The API mounts a Docker volume at `/app/data` for persistent SQLite storage. Deployment is triggered automatically on every push to `main` via the CD pipeline (`.github/workflows/cd.yml`), which SSHes into the instance, pulls the latest code, and runs `docker compose up -d --build`.
 
 ---
 

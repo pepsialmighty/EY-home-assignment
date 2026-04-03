@@ -3,8 +3,9 @@ services:
     build:
       context: .
       dockerfile: api/Dockerfile
-    ports:
-      - "5000:5000"
+    # Port not exposed publicly — nginx proxies /api/ internally via Docker network
+    expose:
+      - "5000"
     volumes:
       - db-data:/app/data
 
@@ -13,7 +14,7 @@ services:
       context: .
       dockerfile: ui/Dockerfile
     ports:
-      - "3000:3000"
+      - "80:3000"
     depends_on:
       - api
 
