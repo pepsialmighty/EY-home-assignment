@@ -261,3 +261,6 @@ Edit and delete actions happen inline within each person card rather than naviga
 5. **Auth** — Add user accounts so multiple family trees can be managed independently
 6. **Export** — PDF or image export of the tree
 7. **Pagination** — For large family trees, paginate the people list
+8. **PWA support** — Package the app as a Progressive Web App so users can install it on any device, use it offline, and receive updates automatically without visiting a URL
+9. **Desktop app** — Wrap the app with Electron.js to deliver a native desktop experience on Windows, macOS, and Linux, with access to local file system for richer data export and offline storage
+10. **Per-device sessions** — Generate a stable device ID (UUID stored in `localStorage`) so users on different devices or browsers get independent family tree sessions without requiring a full auth system
