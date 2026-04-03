@@ -7,7 +7,7 @@ import { relationshipRouter } from './routes/relationshipRoutes';
 const app = express();
 
 app.use(express.json());
-app.use(cors({ origin: 'http://localhost:3000' }));
+app.use(cors({ origin: process.env.CORS_ORIGIN ?? 'http://localhost:3000' }));
 
 app.get('/health', (_req, res) => {
   res.json({ data: { status: 'ok' } });

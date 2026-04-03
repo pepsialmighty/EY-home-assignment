@@ -26,6 +26,7 @@ relationshipRouter.post('/', (req: Request, res: Response, next: NextFunction) =
 
 relationshipRouter.delete('/:id', (req: Request, res: Response, next: NextFunction) => {
   const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) { res.status(400).json({ error: { message: 'Invalid id' } }); return; }
   try {
     relationshipService.deleteRelationship(id);
     res.status(204).send();

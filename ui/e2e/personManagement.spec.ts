@@ -10,14 +10,15 @@ test.beforeEach(async ({ request }) => {
 });
 
 test("create a person and verify they appear in the list", async ({ page }) => {
-  await page.goto("/");
-  await page.getByRole("button", { name: "People" }).click();
-
-  await page.getByTestId("btn-add-person").click();
+  // Navigate directly to add-person since the People tab shows an empty state
+  // with no btn-add-person when the list is empty.
+  await page.goto("/add-person");
   await page.getByTestId("input-name").fill("Alice");
   await page.getByTestId("input-dob").fill("1990-06-15");
   await page.getByTestId("btn-submit").click();
 
+  // After submit, app navigates to / with Tree tab active by default — switch to People.
+  await page.getByRole("button", { name: "People" }).click();
   await expect(page.getByTestId("people-list")).toContainText("Alice");
 });
 
@@ -74,9 +75,9 @@ test("delete a person and verify they are removed from the list", async ({
 });
 
 test("future DOB is rejected with field error", async ({ page }) => {
-  await page.goto("/");
-  await page.getByRole("button", { name: "People" }).click();
-  await page.getByTestId("btn-add-person").click();
+  // Navigate directly to add-person since the People tab shows an empty state
+  // with no btn-add-person when the list is empty.
+  await page.goto("/add-person");
 
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);

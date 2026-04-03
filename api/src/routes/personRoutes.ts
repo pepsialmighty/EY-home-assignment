@@ -27,6 +27,7 @@ personRouter.post('/', (req: Request, res: Response, next: NextFunction) => {
 
 personRouter.put('/:id', (req: Request, res: Response, next: NextFunction) => {
   const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) { res.status(400).json({ error: { message: 'Invalid id' } }); return; }
   const parsed = updatePersonSchema.safeParse(req.body);
   if (!parsed.success) {
     const message = parsed.error.errors[0].message;
@@ -43,12 +44,14 @@ personRouter.put('/:id', (req: Request, res: Response, next: NextFunction) => {
 
 personRouter.get('/:id/parents', (req: Request, res: Response) => {
   const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) { res.status(400).json({ error: { message: 'Invalid id' } }); return; }
   const parents = relationshipService.getParentsOf(id);
   res.json({ data: parents });
 });
 
 personRouter.delete('/:id', (req: Request, res: Response, next: NextFunction) => {
   const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) { res.status(400).json({ error: { message: 'Invalid id' } }); return; }
   try {
     personService.deletePerson(id);
     res.status(204).send();

@@ -15,7 +15,9 @@ export function updatePerson(id: number, dto: UpdatePersonDto): Person {
   if (!existing) {
     throw new AppError(404, 'Person not found');
   }
-  return personDb.updatePerson(id, dto) as Person;
+  const updated = personDb.updatePerson(id, dto);
+  if (!updated) throw new AppError(404, 'Person not found');
+  return updated;
 }
 
 export function deletePerson(id: number): void {
