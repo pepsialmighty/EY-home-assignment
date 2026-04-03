@@ -27,6 +27,8 @@ async function fetchTreeData(): Promise<TreeData> {
     id: `e${rel.parentId}-${rel.childId}`,
     source: String(rel.parentId),
     target: String(rel.childId),
+    // relationshipId carried in data so TreeView can call DELETE /api/relationships/:id
+    data: { relationshipId: rel.id },
   }));
 
   return { nodes, edges, people, relationships };

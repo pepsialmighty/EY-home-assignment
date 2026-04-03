@@ -1,14 +1,19 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import {
   ReactFlow,
   Background,
   Controls,
   Handle,
   Position,
+  BaseEdge,
+  EdgeLabelRenderer,
+  getSmoothStepPath,
 } from "@xyflow/react";
-import type { NodeProps, Node, Edge } from "@xyflow/react";
+import type { NodeProps, Node, Edge, EdgeProps, Connection } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useTreeData } from "../api/useTreeData";
+import { useCreateRelationship, useDeleteRelationship } from "../api/useRelationships";
+import { useToast } from "../context/ToastContext";
 
 function PersonNode({ data }: NodeProps) {
   return (
@@ -29,7 +34,57 @@ function PersonNode({ data }: NodeProps) {
   );
 }
 
+function DeletableEdge({
+  id,
+  sourceX,
+  sourceY,
+  targetX,
+  targetY,
+  sourcePosition,
+  targetPosition,
+  data,
+  style,
+}: EdgeProps) {
+  const deleteRelationship = useDeleteRelationship();
+  const { showToast } = useToast();
+
+  const [edgePath, labelX, labelY] = getSmoothStepPath({
+    sourceX,
+    sourceY,
+    sourcePosition,
+    targetX,
+    targetY,
+    targetPosition,
+  });
+
+  function handleDelete() {
+    const relId = (data as { relationshipId: number }).relationshipId;
+    deleteRelationship.mutate(relId, {
+      onSuccess: () => showToast("Relationship removed"),
+      onError: (err) =>
+        showToast(err instanceof Error ? err.message : "Failed to remove relationship"),
+    });
+  }
+
+  return (
+    <>
+      <BaseEdge id={id} path={edgePath} style={style} />
+      <EdgeLabelRenderer>
+        <button
+          onClick={handleDelete}
+          style={{ transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)` }}
+          className="absolute pointer-events-auto w-5 h-5 rounded-full bg-white border border-gray-300 text-gray-400 text-xs leading-none flex items-center justify-center hover:bg-red-50 hover:border-red-300 hover:text-red-500 transition-colors nodrag nopan"
+          title="Remove relationship"
+        >
+          ×
+        </button>
+      </EdgeLabelRenderer>
+    </>
+  );
+}
+
 const nodeTypes = { person: PersonNode };
+const edgeTypes = { deletable: DeletableEdge };
 
 // Assigns x/y positions to nodes using a simple top-down hierarchical layout.
 function applyTreeLayout(nodes: Node[], edges: Edge[]): Node[] {
@@ -94,6 +149,26 @@ function getLineage(rootId: string, allNodes: Node[], allEdges: Edge[]) {
 export function TreeView() {
   const { data, isLoading, error } = useTreeData();
   const [selectedRootId, setSelectedRootId] = useState<string | null>(null);
+  const createRelationship = useCreateRelationship();
+  const { showToast } = useToast();
+
+  const onConnect = useCallback(
+    (connection: Connection) => {
+      if (!connection.source || !connection.target) return;
+      createRelationship.mutate(
+        {
+          parentId: parseInt(connection.source, 10),
+          childId: parseInt(connection.target, 10),
+        },
+        {
+          onSuccess: () => showToast("Relationship added"),
+          onError: (err) =>
+            showToast(err instanceof Error ? err.message : "Failed to add relationship"),
+        },
+      );
+    },
+    [createRelationship, showToast],
+  );
 
   const rootAncestors = useMemo(() => {
     if (!data) return [];
@@ -126,7 +201,7 @@ export function TreeView() {
     const lineage = getLineage(effectiveRootId, data.nodes, data.edges);
     const typedEdges = lineage.edges.map((e) => ({
       ...e,
-      type: "smoothstep",
+      type: "deletable",
       style: { stroke: "#9ca3af" },
     }));
     const typedNodes = lineage.nodes.map((n) => ({ ...n, type: "person" }));
@@ -160,10 +235,9 @@ export function TreeView() {
   return (
     <div>
       <p className="text-sm text-gray-500 mb-4">
-        Select a founding ancestor to explore their lineage. The tree shows that
-        person and all of their descendants. Only people who have children but
-        no parents of their own appear in this list — unconnected people are not
-        shown here.
+        Select a founding ancestor to explore their lineage. Drag from a node's
+        bottom handle to another node's top handle to add a relationship. Click
+        × on an edge to remove it.
       </p>
 
       <div className="mb-4">
@@ -195,6 +269,8 @@ export function TreeView() {
           nodes={filteredNodes}
           edges={filteredEdges}
           nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
+          onConnect={onConnect}
           fitView
         >
           <Background />
